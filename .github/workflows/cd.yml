@@ -1,15 +1,16 @@
-name: CD Pipeline
+name: CI/CD Frontend
 
 on:
   push:
     branches:
+      - main
       - dev
       - qa
       - prod
 
 jobs:
-  deploy:
-    name: Deploy
+  build-and-deploy:
+    name: Build and Deploy Frontend
     runs-on: ubuntu-latest
 
     steps:
@@ -22,21 +23,25 @@ jobs:
           node-version: 18
 
       - name: Install Dependencies
-        run: |
-          npm install --prefix frontend
+        run: npm install
+
+      # - name: Run Tests
+      #   run: npm test
 
       - name: Build Frontend
-        run: npm run build --prefix frontend
+        run: npm run build
 
-      - name: Deploy to Environment
+      - name: Deploy Frontend
         run: |
           if [ "${{ github.ref_name }}" == "dev" ]; then
             echo "Deploying to Development Environment"
-            # Exemplo: Deploy para servidor Dev
+            # Exemplo: Vercel CLI
+            npm install -g vercel
+            vercel deploy --prod --token=$VERCEL_TOKEN
           elif [ "${{ github.ref_name }}" == "qa" ]; then
             echo "Deploying to QA Environment"
-            # Exemplo: Deploy para servidor QA
+            # Comando para deploy no ambiente QA
           elif [ "${{ github.ref_name }}" == "prod" ]; then
-            echo "Deploying to Production Environment"
-            # Exemplo: Deploy para servidor de Produção
+            echo "Deploying to Production"
+            # Comando para deploy em produção
           fi
