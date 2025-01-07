@@ -1,0 +1,42 @@
+name: CD Pipeline
+
+on:
+  push:
+    branches:
+      - dev
+      - qa
+      - prod
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install Dependencies
+        run: |
+          npm install --prefix frontend
+
+      - name: Build Frontend
+        run: npm run build --prefix frontend
+
+      - name: Deploy to Environment
+        run: |
+          if [ "${{ github.ref_name }}" == "dev" ]; then
+            echo "Deploying to Development Environment"
+            # Exemplo: Deploy para servidor Dev
+          elif [ "${{ github.ref_name }}" == "qa" ]; then
+            echo "Deploying to QA Environment"
+            # Exemplo: Deploy para servidor QA
+          elif [ "${{ github.ref_name }}" == "prod" ]; then
+            echo "Deploying to Production Environment"
+            # Exemplo: Deploy para servidor de Produção
+          fi
